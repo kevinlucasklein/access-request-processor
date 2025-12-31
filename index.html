@@ -120,15 +120,18 @@
             margin-bottom: 15px;
         }
         
-        /* Org Change Output Specifics */
+        /* Org Change Output Specifics - UPDATED FONT */
         .email-output {
-            background-color: #f8f9fa;
+            background-color: #ffffff; /* White background like email */
             border: 1px solid #ddd;
             padding: 20px;
             white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
+            font-family: Arial, Helvetica, sans-serif; /* ARIAL FONT */
+            font-size: 12pt; /* 12PT SIZE */
+            color: #000000;
             max-height: 500px;
             overflow-y: auto;
+            line-height: 1.5;
         }
 
         /* Access Request Table Styling */
@@ -225,7 +228,7 @@
             <div id="orgResults"></div>
 
             <div class="output-section" id="orgOutputSection" style="display: none;">
-                <label>Formatted for Email:</label>
+                <label>Formatted for Email (Arial 12pt):</label>
                 <div id="orgEmailOutput" class="email-output"></div>
                 <div class="button-group">
                     <button onclick="copyOrgResults()" class="copy-btn">📄 Copy Email Text</button>
@@ -239,17 +242,14 @@
         // TAB LOGIC
         // ==========================================
         function openTab(tabName) {
-            // Hide all contents
             const contents = document.getElementsByClassName('tab-content');
             for (let i = 0; i < contents.length; i++) {
                 contents[i].classList.remove('active');
             }
-            // Deactivate all buttons
             const buttons = document.getElementsByClassName('tab-btn');
             for (let i = 0; i < buttons.length; i++) {
                 buttons[i].classList.remove('active');
             }
-            // Activate selected
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
         }
@@ -284,7 +284,6 @@
                     </div>
                 `;
                 
-                // Group entries
                 const removedByDept = {};
                 const approvedByDept = {};
                 
@@ -306,7 +305,6 @@
                 
                 let htmlOutput = `<div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;"><strong>Affected User:</strong> ${result.affectedUser}</div>`;
                 
-                // Generate Tables (Reusing existing logic logic)
                 const removedDepts = Object.keys(removedByDept).sort((a, b) => parseInt(a) - parseInt(b));
                 if (removedDepts.length > 0) {
                     htmlOutput += generateTable('🗑️ REMOVED ROLES', removedDepts, removedByDept, false);
@@ -379,7 +377,6 @@
         }
 
         async function copyAccessResults() {
-            // (Simplified copy logic for table view - same as previous version but cleaner)
             let textOutput = '';
             const userDiv = document.querySelector('#tablesOutput div');
             if(userDiv) textOutput += userDiv.textContent + '\n\n';
@@ -418,7 +415,6 @@
                 return;
             }
 
-            // Split by dashed lines (handling various lengths of dashes)
             const blocks = input.split(/-{5,}/);
             let formattedOutput = "";
             let count = 0;
@@ -426,13 +422,11 @@
             blocks.forEach(block => {
                 if (!block.trim()) return;
 
-                // Extract Data Points using Regex
                 const deptMatch = block.match(/Org Change:\s*(\d+)/i);
-                if (!deptMatch) return; // Skip if no Org ID found
+                if (!deptMatch) return;
 
                 const deptId = deptMatch[1].trim();
                 
-                // Regex for other fields
                 const newMgrMatch = block.match(/New Manager:\s*(.*)/i);
                 const oldMgrMatch = block.match(/Old Manager:\s*(.*)/i);
                 const newNameMatch = block.match(/New Name:\s*(.*)/i);
@@ -440,7 +434,6 @@
                 const newLocMatch = block.match(/New Location:\s*(.*)/i);
                 const reportsToMatch = block.match(/New Reports To Org:\s*(\d+)/i);
 
-                // Build the entry
                 let entry = `Department ID: ${deptId}\n`;
 
                 if (newMgrMatch) entry += `New Manager / uNID: ${newMgrMatch[1].trim()}\n`;
@@ -448,7 +441,6 @@
                 if (newNameMatch) entry += `New Name: ${newNameMatch[1].trim()}\n`;
                 
                 if (newPhoneMatch) {
-                    // Normalize Phone (Change / to -)
                     let phone = newPhoneMatch[1].trim().replace(/\//g, '-');
                     entry += `New Phone: ${phone}\n`;
                 }
@@ -456,7 +448,7 @@
                 if (newLocMatch) entry += `New Location: ${newLocMatch[1].trim()}\n`;
                 if (reportsToMatch) entry += `Now Reports To: ${reportsToMatch[1].trim()}\n`;
 
-                formattedOutput += entry + "\n"; // Add extra newline between entries
+                formattedOutput += entry + "\n";
                 count++;
             });
 
@@ -481,9 +473,6 @@
             copyToClipboard(text, event.target);
         }
 
-        // ==========================================
-        // SHARED UTILS
-        // ==========================================
         async function copyToClipboard(text, btnElement) {
             try {
                 await navigator.clipboard.writeText(text);
@@ -495,7 +484,6 @@
                     btnElement.disabled = false;
                 }, 2000);
             } catch (err) {
-                // Fallback
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
